@@ -2,9 +2,7 @@ package model;
 
 import java.time.LocalDateTime;
 
-/**
- * Represents a booking made by a user for a table.
- */
+//Booking system
 public class Booking {
     private int id;                 // ID брони
     private int userId;             // ID пользователя

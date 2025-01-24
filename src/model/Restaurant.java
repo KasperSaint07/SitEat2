@@ -1,5 +1,5 @@
 package model;
-
+//Restaurant info
 public class Restaurant {
     private int id; // ID ресторана
     private String name; // Название ресторана

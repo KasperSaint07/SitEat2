@@ -6,9 +6,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Service for managing tables in restaurants.
- */
+//All Table logic
 public class TableService {
     private final Connection connection;
 

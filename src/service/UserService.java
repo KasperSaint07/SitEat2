@@ -6,9 +6,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Service for managing users.
- */
+//All User logic
 public class UserService {
     private final Connection connection;
 

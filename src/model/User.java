@@ -1,8 +1,5 @@
 package model;
-
-/**
- * Represents a user in the system.
- */
+//User in system
 public class User {
     private int id;           // ID пользователя
     private String login;     // Логин пользователя

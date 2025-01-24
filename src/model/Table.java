@@ -1,8 +1,6 @@
 package model;
 
-/**
- * Represents a table in a restaurant.
- */
+//Table info
 public class Table {
     private int id;              // ID столика
     private int restaurantId;    // ID ресторана, к которому относится столик
