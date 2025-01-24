@@ -7,9 +7,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Service for managing bookings.
- */
+// All logic related to booking
 public class BookingService {
     private final Connection connection;
 
@@ -18,13 +16,12 @@ public class BookingService {
     }
 
     // Create a new booking
-    // Create a new booking
     public boolean createBooking(int userId, int tableId, LocalDateTime bookingTime) {
-        // Проверяем, доступен ли столик
+        // Check if the table is available
         if (!isTableAvailable(tableId)) {
             System.out.println(" ");
             System.out.println("Table " + tableId + " is already reserved.");
-            return false; // Столик занят, бронирование невозможно
+            return false; // The table is occupied, booking is not possible
         }
 
         String sql = "INSERT INTO bookings (user_id, table_id, booking_time) VALUES (?, ?, ?)";
@@ -33,7 +30,7 @@ public class BookingService {
             stmt.setInt(2, tableId);
             stmt.setTimestamp(3, Timestamp.valueOf(bookingTime));
 
-            // Обновляем статус столика на "занят" только если бронирование успешно
+            // Update the table status to "occupied" only if the booking is successful
             int rowsInserted = stmt.executeUpdate();
             if (rowsInserted > 0) {
                 reserveTable(tableId);
@@ -44,9 +41,8 @@ public class BookingService {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false; // Ошибка при выполнении бронирования
+        return false; // Error occurred while booking
     }
-
 
     // Check if a table is available
     public boolean isTableAvailable(int tableId) {
@@ -63,7 +59,7 @@ public class BookingService {
         return false;
     }
 
-    // Reserve a table (set is_available = false)
+    // Reserve a table
     private void reserveTable(int tableId) {
         String sql = "UPDATE tables SET is_available = false WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -74,7 +70,7 @@ public class BookingService {
         }
     }
 
-    // Retrieve all bookings for a specific user
+    // Get all bookings for a specific user
     public List<Booking> getBookingsByUserId(int userId) {
         List<Booking> bookings = new ArrayList<>();
         String sql = "SELECT * FROM bookings WHERE user_id = ?";
@@ -99,13 +95,13 @@ public class BookingService {
     public boolean cancelBooking(int bookingId) {
         String sql = "DELETE FROM bookings WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            // Получаем table_id из бронирования перед удалением
+            // Get table_id from the booking before deleting
             int tableId = getTableIdByBookingId(bookingId);
             if (tableId > 0) {
                 stmt.setInt(1, bookingId);
                 boolean success = stmt.executeUpdate() > 0;
                 if (success) {
-                    // Освобождаем столик
+                    // Make the table available
                     makeTableAvailable(tableId);
                 }
                 return success;
