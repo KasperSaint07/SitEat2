@@ -1,3 +1,4 @@
+package service;
 import Interfaces.IDB;
 import java.sql.*;
 public class PostgresDB implements IDB {
