@@ -9,7 +9,7 @@ public class User {
     private String password = "";
     private String name = "";
     private String surname = "";
-    private Boolean gender = Boolean.valueOf("");
+//    private Boolean gender = Boolean.valueOf("");
 
     public User(int id, String login, String password, String name, String surname, boolean gender) {
         this.id = id;
@@ -17,7 +17,7 @@ public class User {
         this.password = password;
         this.name = name;
         this.surname = surname;
-        this.gender = gender;
+//        this.gender = gender;
     }
 
     public User(int newId, String login, String password) {
