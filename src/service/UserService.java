@@ -6,20 +6,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserService {
-    private List<User> users = new ArrayList<>();
+    private final List<User> users = new ArrayList<>();
 
 
-    public User authenticate(String username, String password) {
+    public User authenticate(String login, String password) {
         for (User user : users) {
-            if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
+            if (user.getLogin().equals(login) && user.getPassword().equals(password)) {
                 return user;
             }
         }
         return null; // Если пользователь не найден
     }
 
-    public void registerUser(String username, String password) {
+    public void registerUser(String login, String password) {
         int newId = users.size() + 1;
-        users.add(new User(newId, username, password));
+        users.add(new User(newId, login, password));
     }
 }
