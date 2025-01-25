@@ -1,6 +1,8 @@
-package repositories.interfaces;
+package repositories;
 
 import model.User;
+import repositories.interfaces.IUserRepository;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
