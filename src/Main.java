@@ -16,16 +16,16 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         try {
-            // Подключение к базе данных
+            //connect
             IDB db = new PostgresDB();
 
-            // Создание сервисов
+
             UserService userService = new UserService(db.getConnection());
             RestaurantService restaurantService = new RestaurantService(db.getConnection());
             TableService tableService = new TableService(db.getConnection());
             BookingService bookingService = new BookingService(db.getConnection());
 
-            // Интерфейс консольного приложения
+            //Menu
             Scanner scanner = new Scanner(System.in);
 
             while (true) {
@@ -39,7 +39,7 @@ public class Main {
 
                 switch (choice) {
                     case 1:
-                        // Регистрация
+                        // Regist
                         System.out.print("Enter login: ");
                         String login = scanner.nextLine();
                         System.out.print("Enter password: ");
@@ -60,7 +60,7 @@ public class Main {
                         break;
 
                     case 2:
-                        // Логин
+
                         System.out.print("Enter login: ");
                         login = scanner.nextLine();
                         System.out.print("Enter password: ");
@@ -69,8 +69,7 @@ public class Main {
                         User user = userService.authenticate(login, password);
                         if (user != null) {
                             System.out.println("Login successful! Welcome, " + user.getName());
-
-                            // Показываем меню после входа
+                            //2 menu
                             boolean loggedIn = true;
                             while (loggedIn) {
                                 System.out.println("Choose an option:");
@@ -85,7 +84,7 @@ public class Main {
 
                                 switch (userChoice) {
                                     case 1:
-                                        // Просмотр ресторанов
+                                        // menu of restaurant
                                         System.out.println("Available Restaurants:");
                                         for (Restaurant restaurant : restaurantService.getAllRestaurants()) {
                                             System.out.println("ID: " + restaurant.getId() + ", Name: " + restaurant.getName() +
@@ -94,7 +93,7 @@ public class Main {
                                         break;
 
                                     case 2:
-                                        // Просмотр доступных столиков
+                                        // available tables
                                         System.out.print("Enter restaurant ID to view available tables: ");
                                         int restaurantId = scanner.nextInt();
                                         scanner.nextLine();
@@ -106,12 +105,12 @@ public class Main {
                                         break;
 
                                     case 3:
-                                        // Бронирование столика
+                                        // reserved
                                         System.out.print("Enter table ID to book: ");
                                         int tableId = scanner.nextInt();
                                         scanner.nextLine();
 
-                                        // Проверяем и бронируем столик
+                                        // Check and reserve
                                         if (bookingService.createBooking(user.getId(), tableId, LocalDateTime.now())) {
                                             System.out.println("");
                                         } else {
@@ -121,7 +120,7 @@ public class Main {
 
 
                                     case 4:
-                                        // Просмотр бронирований
+                                        // check for reserve
                                         System.out.println("Your Bookings:");
                                         for (Booking booking : bookingService.getBookingsByUserId(user.getId())) {
                                             System.out.println("Booking ID: " + booking.getId() + ", Table ID: " + booking.getTableId() +
@@ -130,7 +129,7 @@ public class Main {
                                         break;
 
                                     case 5:
-                                        // Выход из учетной записи
+                                        // exit
                                         loggedIn = false;
                                         System.out.println("Logged out successfully!");
                                         break;
@@ -145,7 +144,7 @@ public class Main {
                         break;
 
                     case 3:
-                        // Выход из приложения
+                        //exit
                         System.out.println("Thank you for using Sit&Eat. Goodbye!");
                         scanner.close();
                         return;
