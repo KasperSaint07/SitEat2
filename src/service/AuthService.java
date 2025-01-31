@@ -1,6 +1,6 @@
 package service;
 import model.User;
-import model.Admin
+import model.Admin;
 import repositories.AdminRepository;
 import repositories.UserRepository;
 public class AuthService {
@@ -11,10 +11,10 @@ public class AuthService {
         this.userRepository = userRepository;
     }
     public Admin loginAsAdmin(String username, String password){
-        return adminRepository.getAdminByCrediantals(username, password);
+        return adminRepository.getAdminByCredentials(username, password);
     }
     public User loginAsUser(String username, String password){
-        return userRepository.getUserByCrediantals(username, password);
+        return userRepository.getUserByCredentials(username, password);
     }
 
 }
