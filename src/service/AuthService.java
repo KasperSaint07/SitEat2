@@ -14,7 +14,7 @@ public class AuthService {
         return adminRepository.getAdminByCrediantals(username, password);
     }
     public User loginAsUser(String username, String password){
-        return userRepository.getAdminByCrediantals(username, password);
+        return userRepository.getUserByCrediantals(username, password);
     }
 
 }
