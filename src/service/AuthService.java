@@ -1,6 +1,6 @@
 package service;
 import model.User;
-import model.Admin
+import model.Admin;
 import repositories.AdminRepository;
 import repositories.UserRepository;
 public class AuthService {
