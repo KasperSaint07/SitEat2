@@ -3,6 +3,7 @@ package service;
 import model.Booking;
 import repositories.BookingRepository;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -15,15 +16,7 @@ public class BookingService {
 
     public boolean createBooking(int userId, int tableId) {
         LocalDateTime bookingTime = LocalDateTime.now();
-        return bookingRepository.addBooking(userId, tableId, bookingTime);
-    }
-
-    public boolean cancelBooking(int bookingId) {
-        return bookingRepository.deleteBooking(bookingId);
-    }
-
-    public List<Booking> getUserBookings(int userId) {
-        return bookingRepository.getBookingsByUserId(userId);
+        return bookingRepository.addBooking(userId, tableId, Timestamp.valueOf(bookingTime));
     }
 
     public List<Booking> getBookingsByRestaurant(int restaurantId) {

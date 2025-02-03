@@ -1,20 +1,24 @@
 package service;
-import model.User;
+
 import model.Admin;
+import model.User;
 import repositories.AdminRepository;
 import repositories.UserRepository;
+
 public class AuthService {
-    private AdminRepository adminRepository;
-    private UserRepository userRepository;
+    private final AdminRepository adminRepository;
+    private final UserRepository userRepository;
+
     public AuthService(AdminRepository adminRepository, UserRepository userRepository) {
         this.adminRepository = adminRepository;
         this.userRepository = userRepository;
     }
-    public Admin loginAsAdmin(String username, String password){
+
+    public Admin loginAsAdmin(String username, String password) {
         return adminRepository.getAdminByCredentials(username, password);
     }
-    public User loginAsUser(String username, String password){
+
+    public User loginAsUser(String username, String password) {
         return userRepository.getUserByCredentials(username, password);
     }
-
 }

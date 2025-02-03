@@ -38,4 +38,41 @@ public class TableRepository {
         }
         return false;
     }
+
+    public boolean addTable(int restaurantId) {
+        String sql = "INSERT INTO tables (restaurant_id, is_available) VALUES (?, true)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, restaurantId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public List<Table> getTablesByRestaurant(int restaurantId) {
+        List<Table> tables = new ArrayList<>();
+        String sql = "SELECT * FROM tables WHERE restaurant_id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, restaurantId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                tables.add(new Table(rs.getInt("id"), rs.getInt("restaurant_id"), rs.getBoolean("is_available")));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return tables;
+    }
+
+    public boolean removeTable(int tableId) {
+        String sql = "DELETE FROM tables WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, tableId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
