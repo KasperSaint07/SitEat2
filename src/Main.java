@@ -1,158 +1,31 @@
 import Interfaces.IDB;
-import model.Booking;
-import model.Restaurant;
-import model.Table;
-import model.User;
-import service.BookingService;
-import service.RestaurantService;
-import service.TableService;
-import service.UserService;
-import service.PostgresDB;
-
+import repositories.*;
+import service.*;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         try {
-            //connect
+            // Создаем подключение к базе данных
             IDB db = new PostgresDB();
+            var connection = db.getConnection();
 
+            // Создаем экземпляры репозиториев
+            UserRepository userRepository = new UserRepository(connection);
+            RestaurantRepository restaurantRepository = new RestaurantRepository(connection);
+            TableRepository tableRepository = new TableRepository(connection);
+            BookingRepository bookingRepository = new BookingRepository(connection);
+            AdminRepository adminRepository = new AdminRepository(connection);
 
-            UserService userService = new UserService(db.getConnection());
-            RestaurantService restaurantService = new RestaurantService(db.getConnection());
-            TableService tableService = new TableService(db.getConnection());
-            BookingService bookingService = new BookingService(db.getConnection());
+            // Создаем экземпляры сервисов
+            UserService userService = new UserService(userRepository);
+            RestaurantService restaurantService = new RestaurantService(restaurantRepository);
+            TableService tableService = new TableService(tableRepository);
+            BookingService bookingService = new BookingService(bookingRepository);
+            AdminService adminService = new AdminService(adminRepository, tableRepository, bookingRepository);
 
-            //Menu
-            Scanner scanner = new Scanner(System.in);
-
-            while (true) {
-                System.out.println("Welcome to Sit&Eat! Choose an option:");
-                System.out.println("1. Register");
-                System.out.println("2. Login");
-                System.out.println("3. Exit");
-                System.out.print("Your choice: ");
-                int choice = scanner.nextInt();
-                scanner.nextLine(); // Clear the buffer
-
-                switch (choice) {
-                    case 1:
-                        // Regist
-                        System.out.print("Enter login: ");
-                        String login = scanner.nextLine();
-                        System.out.print("Enter password: ");
-                        String password = scanner.nextLine();
-                        System.out.print("Enter your name: ");
-                        String name = scanner.nextLine();
-                        System.out.print("Enter your surname: ");
-                        String surname = scanner.nextLine();
-                        System.out.print("Enter your gender (true for male, false for female): ");
-                        boolean gender = scanner.nextBoolean();
-
-                        boolean registered = userService.registerUser(login, password, name, surname, gender);
-                        if (registered) {
-                            System.out.println("Registration successful!");
-                        } else {
-                            System.out.println("Registration failed.");
-                        }
-                        break;
-
-                    case 2:
-
-                        System.out.print("Enter login: ");
-                        login = scanner.nextLine();
-                        System.out.print("Enter password: ");
-                        password = scanner.nextLine();
-
-                        User user = userService.authenticate(login, password);
-                        if (user != null) {
-                            System.out.println("Login successful! Welcome, " + user.getName());
-                            //2 menu
-                            boolean loggedIn = true;
-                            while (loggedIn) {
-                                System.out.println("Choose an option:");
-                                System.out.println("1. View Restaurants");
-                                System.out.println("2. View Available Tables");
-                                System.out.println("3. Book a Table");
-                                System.out.println("4. View My Bookings");
-                                System.out.println("5. Logout");
-                                System.out.print("Your choice: ");
-                                int userChoice = scanner.nextInt();
-                                scanner.nextLine(); // Clear the buffer
-
-                                switch (userChoice) {
-                                    case 1:
-                                        // menu of restaurant
-                                        System.out.println("Available Restaurants:");
-                                        for (Restaurant restaurant : restaurantService.getAllRestaurants()) {
-                                            System.out.println("ID: " + restaurant.getId() + ", Name: " + restaurant.getName() +
-                                                    ", Location: " + restaurant.getLocation());
-                                        }
-                                        break;
-
-                                    case 2:
-                                        // available tables
-                                        System.out.print("Enter restaurant ID to view available tables: ");
-                                        int restaurantId = scanner.nextInt();
-                                        scanner.nextLine();
-
-                                        System.out.println("Available tables in restaurant " + restaurantId + ":");
-                                        for (Table table : tableService.getAvailableTables(restaurantId)) {
-                                            System.out.println("Table ID: " + table.getId());
-                                        }
-                                        break;
-
-                                    case 3:
-                                        // reserved
-                                        System.out.print("Enter table ID to book: ");
-                                        int tableId = scanner.nextInt();
-                                        scanner.nextLine();
-
-                                        // Check and reserve
-                                        if (bookingService.createBooking(user.getId(), tableId, LocalDateTime.now())) {
-                                            System.out.println("");
-                                        } else {
-                                            System.out.println("");
-                                        }
-                                        break;
-
-
-                                    case 4:
-                                        // check for reserve
-                                        System.out.println("Your Bookings:");
-                                        for (Booking booking : bookingService.getBookingsByUserId(user.getId())) {
-                                            System.out.println("Booking ID: " + booking.getId() + ", Table ID: " + booking.getTableId() +
-                                                    ", Time: " + booking.getBookingTime());
-                                        }
-                                        break;
-
-                                    case 5:
-                                        // exit
-                                        loggedIn = false;
-                                        System.out.println("Logged out successfully!");
-                                        break;
-
-                                    default:
-                                        System.out.println("Invalid option. Please try again.");
-                                }
-                            }
-                        } else {
-                            System.out.println("Login failed. Please check your credentials.");
-                        }
-                        break;
-
-                    case 3:
-                        //exit
-                        System.out.println("Thank you for using Sit&Eat. Goodbye!");
-                        scanner.close();
-                        return;
-
-                    default:
-                        System.out.println("Invalid choice. Please try again.");
-                }
-            }
+            // TODO: добавьте логику для взаимодействия с пользователем (например, MyApplication)
+            System.out.println("Setup completed successfully. Add menu logic here.");
         } catch (SQLException e) {
             System.out.println("Database error: " + e.getMessage());
         } catch (Exception e) {
