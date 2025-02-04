@@ -1,21 +1,21 @@
 package controllers;
 import model.User;
-import service.BookingService;
-import service.AuthService;
-import service.RestaurantService;
-import service.TableService;
+import service.*;
+
 import java.util.Scanner;
 public class MenuManager {
     private AuthService authService;
     private BookingService bookingService;
     private RestaurantService restaurantService;
     private TableService tableService;
+    private UserService userService;
     private Scanner scanner=new Scanner(System.in);
-    public MenuManager(AuthService authService, BookingService bookingService, RestaurantService restaurantService, TableService tableService) {
+    public MenuManager(AuthService authService, BookingService bookingService, RestaurantService restaurantService, TableService tableService, UserService userService) {
         this.authService=authService;
         this.bookingService=bookingService;
         this.restaurantService=restaurantService;
         this.tableService=tableService;
+        this.userService=userService;
     }
     public void start() {
         while(true){
@@ -43,7 +43,7 @@ public class MenuManager {
         System.out.println("Enter your gender(true for male, false for female): ");
         boolean gender = scanner.nextBoolean();
         scanner.nextLine();
-        boolean registered = authService.registerUser(login, password, name, surname, gender);
+        boolean registered = userService.registerUser(login,password);
         if (registered) {
             System.out.println("Registration successful!");
         } else {
@@ -79,22 +79,22 @@ public class MenuManager {
             scanner.nextLine(); // Clear the buffer
             switch (userChoice) {
                 case 1:
-                    restaurantService.viewRestaurants();
+                    restaurantService.getAllRestaurants();
                     break;
                 case 2:
                     System.out.print("Enter restaurant ID to view available tables: ");
                     int restaurantId = scanner.nextInt();
                     scanner.nextLine();
-                    tableService.viewAvailableTables(restaurantId);
+                    tableService.getAvailableTables(restaurantId);
                     break;
                 case 3:
                     System.out.print("Enter table ID to book: ");
                     int tableId = scanner.nextInt();
                     scanner.nextLine();
-                    bookingService.bookTable(user.getId(), tableId);
-                        break;
-                case4:
-                    bookingService.viewUserBookings(user.getId());
+                    bookingService.createBooking(user.getId(), tableId);
+                    break;
+                case 4:
+                    bookingService.getBookingsByUserId(user.getId());
                     break;
                 case 5:
                     loggedIn = false;
@@ -104,7 +104,6 @@ public class MenuManager {
                     System.out.println("Invalid option. Please try again.");
             }
         }
-    }}
     }
 }
 

@@ -22,4 +22,7 @@ public class BookingService {
     public List<Booking> getBookingsByRestaurant(int restaurantId) {
         return bookingRepository.getBookingsByRestaurantId(restaurantId);
     }
+    public List<Booking> getBookingsByUserId(int userId) {
+        return bookingRepository.getBookingsByUserId(userId);
+    }
 }
