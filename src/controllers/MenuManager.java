@@ -18,19 +18,37 @@ public class MenuManager {
         this.userService=userService;
     }
     public void start() {
-        while(true){
-            System.out.println("1.Register");
-            System.out.println("2.Login");
-            System.out.println("3.Exit");
+        while (true) {
+            System.out.println("1. Register");
+            System.out.println("2. Login");
+            System.out.println("3. Exit");
             System.out.print("Enter your choice: ");
-            int choice=scanner.nextInt();
-            scanner.nextLine();
-            switch(choice) {
+
+            if (!scanner.hasNextInt()) { // Проверяем, является ли ввод числом
+                System.out.println("Invalid input! Please enter a number.");
+                scanner.next(); // Очистка буфера
+                continue;
+            }
+
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Очистка буфера
+
+            switch (choice) {
                 case 1:
+                    handleRegistration();
+                    break;
+                case 2:
+                    handleLogin();
+                    break;
+                case 3:
+                    System.out.println("Thank you for using Sit&Eat. Goodbye!");
+                    return;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
             }
         }
-
     }
+
     private void handleRegistration() {
         System.out.println("Enter login: ");
         String login = scanner.nextLine();
