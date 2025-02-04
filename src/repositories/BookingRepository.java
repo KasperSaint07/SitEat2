@@ -49,4 +49,23 @@ public class BookingRepository {
         }
         return bookings;
     }
+    public List<Booking> getBookingsByUserId(int userId) {
+        List<Booking> bookings = new ArrayList<>();
+        String sql = "SELECT * FROM bookings WHERE user_id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                bookings.add(new Booking(
+                        rs.getInt("id"),
+                        rs.getInt("user_id"),
+                        rs.getInt("table_id"),
+                        rs.getTimestamp("booking_time").toLocalDateTime()
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return bookings;
+    }
 }
