@@ -12,8 +12,8 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public boolean registerUser(String username, String password) {
-        return userRepository.addUser(username, password);
+    public boolean registerUser(String login, String password, String name, String surname,boolean gender) {
+        return userRepository.addUser(new User(0, login,password,name,surname,gender));
     }
 
     public User getUserById(int userId) {
