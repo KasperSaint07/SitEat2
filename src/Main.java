@@ -15,7 +15,7 @@ public class Main {
         AuthService authService = new AuthService(adminRepository, userRepository);
         RestaurantService restaurantService = new RestaurantService(restaurantRepository);
         TableService tableService = new TableService(tableRepository);
-        BookingService bookingService = new BookingService(bookingRepository);
+        BookingService bookingService = new BookingService(bookingRepository, tableRepository);
         UserService userService = new UserService(userRepository);
         // Start menu manager
         MenuManager menuManager = new MenuManager(authService,bookingService,restaurantService,tableService ,userService);

@@ -14,17 +14,26 @@ public class RestaurantRepository {
 
     public List<Restaurant> getAllRestaurants() {
         List<Restaurant> restaurants = new ArrayList<>();
-        String sql = "SELECT * FROM restaurants";
+        String sql = "SELECT * FROM restaurants ORDER BY id ASC";
+        System.out.println("\nExecuting SQL Query: " + sql);
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
-                restaurants.add(new Restaurant(rs.getInt("id"), rs.getString("name"), rs.getString("location")));
+                System.out.println("Loaded: " + rs.getString("name"));
+                restaurants.add(new Restaurant(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("location")
+                ));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return restaurants;
     }
+
+
+
 
     public boolean addRestaurant(String name, String location) {
         String sql = "INSERT INTO restaurants (name, location) VALUES (?, ?)";
