@@ -120,39 +120,40 @@ public class MenuManager {
         }
     }
     private void handleViewRestaurants() {
-        System.out.println("\nExecuting handleViewRestaurants()..."); // Отладочное сообщение
-        try {
-            List<Restaurant> restaurants = restaurantService.getAllRestaurants();
-            if (restaurants.isEmpty()) {
-                System.out.println("No restaurants available.");
-            } else {
-                for (Restaurant restaurant : restaurants) {
-                    System.out.println("ID: " + restaurant.getId() + " | Name: " + restaurant.getName() +
-                            " | Location: " + restaurant.getLocation());
-                }
+        System.out.println("\n Available Restaurants:");
+        List<Restaurant> restaurants = restaurantService.getAllRestaurants();
+        if (restaurants.isEmpty()) {
+            System.out.println(" No restaurants found in the database!");
+        } else {
+            for (Restaurant restaurant : restaurants) {
+                System.out.println("🍽️ ID: " + restaurant.getId() +
+                        " | Name: " + restaurant.getName() +
+                        " | Location: " + restaurant.getLocation());
             }
-        } catch (Exception e) {
-            System.out.println("An error occurred while fetching restaurants: " + e.getMessage());
         }
     }
+
+
 
     private void handleViewAvailableTables() {
         System.out.print("\nEnter restaurant ID to view available tables: ");
-        int restaurantId = getUserChoice();
+        int restaurantId = scanner.nextInt();
+        scanner.nextLine(); // clear the input buffer
 
-        try {
-            List<Table> tables = tableService.getAvailableTables(restaurantId);
-            if (tables.isEmpty()) {
-                System.out.println("No available tables for restaurant ID: " + restaurantId);
-            } else {
-                for (Table table : tables) {
-                    System.out.println("Table ID: " + table.getId());
-                }
+        System.out.println("\n Fetching available tables for Restaurant ID: " + restaurantId + "...");
+        List<Table> availableTables = tableService.getAvailableTables(restaurantId);
+
+        if (availableTables.isEmpty()) {
+            System.out.println(" No available tables found for this restaurant.");
+        } else {
+            System.out.println("\n Available Tables:");
+            for (Table table : availableTables) {
+                System.out.println("Table ID: " + table.getId());
             }
-        } catch (Exception e) {
-            System.out.println("An error occurred while fetching tables: " + e.getMessage());
         }
     }
+
+
 
     private void handleBookTable(User user) {
         System.out.print("\nEnter table ID to book: ");
@@ -161,29 +162,35 @@ public class MenuManager {
         try {
             boolean success = bookingService.createBooking(user.getId(), tableId);
             if (!success) {
-                System.out.println("Failed to book table. It may already be reserved.");
+                System.out.println(" Booking failed. The table may already be reserved.");
             }
         } catch (Exception e) {
-            System.out.println("An error occurred while booking table: " + e.getMessage());
+            System.out.println(" Error while booking table: " + e.getMessage());
         }
     }
 
+
     private void handleViewMyBookings(User user) {
-        System.out.println("\nFetching your bookings...");
-        try {
-            List<Booking> bookings = bookingService.getBookingsByUserId(user.getId());
-            if (bookings.isEmpty()) {
-                System.out.println("You have no bookings.");
-            } else {
-                for (Booking booking : bookings) {
-                    System.out.println("Booking ID: " + booking.getId() + " | Table ID: " + booking.getTableId() +
-                            " | Time: " + booking.getBookingTime());
-                }
-            }
-        } catch (Exception e) {
-            System.out.println("An error occurred while fetching your bookings: " + e.getMessage());
+        System.out.println("\n Fetching your bookings...");
+
+        List<Booking> bookings = bookingService.getBookingsByUserId(user.getId());
+        if (bookings.isEmpty()) {
+            System.out.println(" You have no bookings yet.");
+            return;
+        }
+
+        System.out.println("\n Your Bookings:");
+        for (Booking booking : bookings) {
+            // Получаем ID ресторана по ID столика
+            int restaurantId = tableService.getRestaurantIdByTable(booking.getTableId());
+
+            System.out.println(" Booking ID: " + booking.getId() +
+                    " | Restaurant ID: " + restaurantId +
+                    " | Table ID: " + booking.getTableId() +
+                    " | Time: " + booking.getBookingTime());
         }
     }
+
 
     private int getUserChoice() {
         while (true) {

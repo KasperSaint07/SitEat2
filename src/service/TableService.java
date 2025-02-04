@@ -31,4 +31,9 @@ public class TableService {
     public boolean removeTable(int tableId) {
         return tableRepository.removeTable(tableId);
     }
+
+    public int getRestaurantIdByTable(int tableId) {
+        return tableRepository.getRestaurantIdByTable(tableId);
+    }
+
 }
