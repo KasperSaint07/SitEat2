@@ -160,9 +160,7 @@ public class MenuManager {
 
         try {
             boolean success = bookingService.createBooking(user.getId(), tableId);
-            if (success) {
-                System.out.println("Table booked successfully!");
-            } else {
+            if (!success) {
                 System.out.println("Failed to book table. It may already be reserved.");
             }
         } catch (Exception e) {

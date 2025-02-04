@@ -11,10 +11,15 @@ public class TableRepository {
     public TableRepository(Connection connection) {
         this.connection = connection;
     }
-
     public List<Table> getAvailableTables(int restaurantId) {
         List<Table> tables = new ArrayList<>();
-        String sql = "SELECT * FROM tables WHERE restaurant_id = ? AND is_available = true";
+        String sql = """ 
+            SELECT t.id, t.restaurant_id, t.is_available  
+            FROM tables t 
+            LEFT JOIN bookings b ON t.id = b.table_id 
+            WHERE t.restaurant_id = ? AND t.is_available = true AND b.table_id IS NULL 
+            LIMIT 10 
+        """;
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, restaurantId);
             ResultSet rs = stmt.executeQuery();
@@ -25,6 +30,19 @@ public class TableRepository {
             e.printStackTrace();
         }
         return tables;
+    }
+    public boolean isTableAvailable(int tableId) {
+        String sql = "SELECT is_available FROM tables WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, tableId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getBoolean("is_available");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public boolean updateTableAvailability(int tableId, boolean isAvailable) {
@@ -32,43 +50,6 @@ public class TableRepository {
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setBoolean(1, isAvailable);
             stmt.setInt(2, tableId);
-            return stmt.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    public boolean addTable(int restaurantId) {
-        String sql = "INSERT INTO tables (restaurant_id, is_available) VALUES (?, true)";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, restaurantId);
-            return stmt.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    public List<Table> getTablesByRestaurant(int restaurantId) {
-        List<Table> tables = new ArrayList<>();
-        String sql = "SELECT * FROM tables WHERE restaurant_id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, restaurantId);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                tables.add(new Table(rs.getInt("id"), rs.getInt("restaurant_id"), rs.getBoolean("is_available")));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return tables;
-    }
-
-    public boolean removeTable(int tableId) {
-        String sql = "DELETE FROM tables WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, tableId);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
