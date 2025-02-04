@@ -61,7 +61,7 @@ public class MenuManager {
         System.out.println("Enter your gender(true for male, false for female): ");
         boolean gender = scanner.nextBoolean();
         scanner.nextLine();
-        boolean registered = userService.registerUser(login,password);
+        boolean registered = userService.registerUser(login, password, name, surname, gender);
         if (registered) {
             System.out.println("Registration successful!");
         } else {

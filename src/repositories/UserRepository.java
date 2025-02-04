@@ -12,17 +12,19 @@ public class UserRepository {
         this.connection = connection;
     }
 
-    public boolean addUser(String login, String password) {
-        String sql = "INSERT INTO users (login, password) VALUES (?, ?)";
+    public boolean addUser(User user) {
+        String sql = "INSERT INTO users (login, password, name, surname, gender) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, login);
-            stmt.setString(2, password);
-            return stmt.executeUpdate() > 0;
-        } catch (SQLException e) {
+            stmt.setString(1, user.getLogin());
+            stmt.setString(2, user.getPassword());
+            stmt.setString(3, user.getName());
+            stmt.setString(4, user.getSurname());
+            stmt.setBoolean(5, user.isGender());
+            return stmt.executeUpdate() > 0;    }
+        catch (SQLException e) {
             e.printStackTrace();
-        }
-        return false;
-    }
+            return false;
+        }}
 
     public User getUserById(int id) {
         String sql = "SELECT * FROM users WHERE id = ?";
