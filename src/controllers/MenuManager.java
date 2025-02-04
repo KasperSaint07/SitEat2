@@ -1,7 +1,9 @@
 package controllers;
-import model.User;
+import model.Restaurant;
+import model.*;
 import service.*;
 
+import java.util.List;
 import java.util.Scanner;
 public class MenuManager {
     private AuthService authService;
@@ -24,14 +26,8 @@ public class MenuManager {
             System.out.println("3. Exit");
             System.out.print("Enter your choice: ");
 
-            if (!scanner.hasNextInt()) { // Проверяем, является ли ввод числом
-                System.out.println("Invalid input! Please enter a number.");
-                scanner.next(); // Очистка буфера
-                continue;
-            }
-
             int choice = scanner.nextInt();
-            scanner.nextLine(); // Очистка буфера
+            scanner.nextLine();
 
             switch (choice) {
                 case 1:
@@ -59,7 +55,7 @@ public class MenuManager {
         System.out.println("Enter your surname: ");
         String surname = scanner.nextLine();
         System.out.println("Enter your gender(true for male, false for female): ");
-        boolean gender = scanner.nextBoolean();
+        boolean gender =  Boolean.parseBoolean(scanner.nextLine());
         scanner.nextLine();
         boolean registered = userService.registerUser(login, password, name, surname, gender);
         if (registered) {
@@ -120,6 +116,84 @@ public class MenuManager {
                     break;
                 default:
                     System.out.println("Invalid option. Please try again.");
+            }
+        }
+    }
+    private void handleViewRestaurants() {
+        System.out.println("\nExecuting handleViewRestaurants()..."); // Отладочное сообщение
+        try {
+            List<Restaurant> restaurants = restaurantService.getAllRestaurants();
+            if (restaurants.isEmpty()) {
+                System.out.println("No restaurants available.");
+            } else {
+                for (Restaurant restaurant : restaurants) {
+                    System.out.println("ID: " + restaurant.getId() + " | Name: " + restaurant.getName() +
+                            " | Location: " + restaurant.getLocation());
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("An error occurred while fetching restaurants: " + e.getMessage());
+        }
+    }
+
+    private void handleViewAvailableTables() {
+        System.out.print("\nEnter restaurant ID to view available tables: ");
+        int restaurantId = getUserChoice();
+
+        try {
+            List<Table> tables = tableService.getAvailableTables(restaurantId);
+            if (tables.isEmpty()) {
+                System.out.println("No available tables for restaurant ID: " + restaurantId);
+            } else {
+                for (Table table : tables) {
+                    System.out.println("Table ID: " + table.getId());
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("An error occurred while fetching tables: " + e.getMessage());
+        }
+    }
+
+    private void handleBookTable(User user) {
+        System.out.print("\nEnter table ID to book: ");
+        int tableId = getUserChoice();
+
+        try {
+            boolean success = bookingService.createBooking(user.getId(), tableId);
+            if (success) {
+                System.out.println("Table booked successfully!");
+            } else {
+                System.out.println("Failed to book table. It may already be reserved.");
+            }
+        } catch (Exception e) {
+            System.out.println("An error occurred while booking table: " + e.getMessage());
+        }
+    }
+
+    private void handleViewMyBookings(User user) {
+        System.out.println("\nFetching your bookings...");
+        try {
+            List<Booking> bookings = bookingService.getBookingsByUserId(user.getId());
+            if (bookings.isEmpty()) {
+                System.out.println("You have no bookings.");
+            } else {
+                for (Booking booking : bookings) {
+                    System.out.println("Booking ID: " + booking.getId() + " | Table ID: " + booking.getTableId() +
+                            " | Time: " + booking.getBookingTime());
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("An error occurred while fetching your bookings: " + e.getMessage());
+        }
+    }
+
+    private int getUserChoice() {
+        while (true) {
+            try {
+                int choice = Integer.parseInt(scanner.nextLine().trim());
+                return choice;
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input! Please enter a number.");
             }
         }
     }
