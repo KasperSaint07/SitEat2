@@ -16,12 +16,14 @@ public class TableService {
         return tableRepository.getAvailableTables(restaurantId);
     }
 
-    public boolean reserveTable(int tableId) {
-        return tableRepository.updateTableAvailability(tableId, false);
+    public boolean reserveTable(int tableId, boolean reserve) {
+        tableRepository.updateTableAvailability(tableId, false);
+        return reserve;
     }
 
-    public boolean releaseTable(int tableId) {
-        return tableRepository.updateTableAvailability(tableId, true);
+    public boolean releaseTable(int tableId, boolean release) {
+        tableRepository.updateTableAvailability(tableId, true);
+        return release;
     }
 
     public boolean addTable(int restaurantId) {
@@ -39,7 +41,4 @@ public class TableService {
     public List<Table> getTablesByRestaurant(int restaurantId) {
         return tableRepository.getTablesByRestaurant(restaurantId);
     }
-
-
 }
-
