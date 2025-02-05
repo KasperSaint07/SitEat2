@@ -80,35 +80,29 @@ public class MenuManager {
 
     }
     private void showUserMenu(User user) {
-        boolean loggedIn=true;
+        boolean loggedIn = true;
         while (loggedIn) {
-            System.out.println("Choose an option:");
+            System.out.println("\nChoose an option:");
             System.out.println("1. View Restaurants");
             System.out.println("2. View Available Tables");
             System.out.println("3. Book a Table");
             System.out.println("4. View My Bookings");
             System.out.println("5. Logout");
             System.out.print("Your choice: ");
-            int userChoice = scanner.nextInt();
-            scanner.nextLine(); // Clear the buffer
+            int userChoice = getUserChoice(); // Используем уже существующий метод для ввода числа
+
             switch (userChoice) {
                 case 1:
-                    restaurantService.getAllRestaurants();
+                    handleViewRestaurants();
                     break;
                 case 2:
-                    System.out.print("Enter restaurant ID to view available tables: ");
-                    int restaurantId = scanner.nextInt();
-                    scanner.nextLine();
-                    tableService.getAvailableTables(restaurantId);
+                    handleViewAvailableTables();
                     break;
                 case 3:
-                    System.out.print("Enter table ID to book: ");
-                    int tableId = scanner.nextInt();
-                    scanner.nextLine();
-                    bookingService.createBooking(user.getId(), tableId);
+                    handleBookTable(user);
                     break;
                 case 4:
-                    bookingService.getBookingsByUserId(user.getId());
+                    handleViewMyBookings(user);
                     break;
                 case 5:
                     loggedIn = false;
@@ -119,77 +113,108 @@ public class MenuManager {
             }
         }
     }
+
     private void handleViewRestaurants() {
-        System.out.println("\n Available Restaurants:");
+        System.out.println("\nAvailable Restaurants:");
         List<Restaurant> restaurants = restaurantService.getAllRestaurants();
         if (restaurants.isEmpty()) {
-            System.out.println(" No restaurants found in the database!");
+            System.out.println("No restaurants found.");
         } else {
             for (Restaurant restaurant : restaurants) {
-                System.out.println("🍽️ ID: " + restaurant.getId() +
-                        " | Name: " + restaurant.getName() +
-                        " | Location: " + restaurant.getLocation());
+                System.out.println("[" + restaurant.getId() + "] - " + restaurant.getName());
             }
         }
     }
+
 
 
 
     private void handleViewAvailableTables() {
         System.out.print("\nEnter restaurant ID to view available tables: ");
-        int restaurantId = scanner.nextInt();
-        scanner.nextLine(); // clear the input buffer
-
-        System.out.println("\n Fetching available tables for Restaurant ID: " + restaurantId + "...");
-        List<Table> availableTables = tableService.getAvailableTables(restaurantId);
-
-        if (availableTables.isEmpty()) {
-            System.out.println(" No available tables found for this restaurant.");
+        int restaurantId = getUserChoice();
+        List<Table> tables = tableService.getAvailableTables(restaurantId);
+        if (tables.isEmpty()) {
+            System.out.println("No available tables found for restaurant ID: " + restaurantId);
         } else {
-            System.out.println("\n Available Tables:");
-            for (Table table : availableTables) {
-                System.out.println("Table ID: " + table.getId());
+            System.out.println("Available Tables:");
+            int index = 1;
+            for (Table table : tables) {
+                // Выводим порядковый номер, а не table.getId()
+                System.out.println("[" + index + "] - is available");
+                index++;
             }
         }
     }
+
+
 
 
 
     private void handleBookTable(User user) {
-        System.out.print("\nEnter table ID to book: ");
-        int tableId = getUserChoice();
+        System.out.print("\nEnter restaurant ID for booking: ");
+        int restaurantId = getUserChoice();
 
-        try {
-            boolean success = bookingService.createBooking(user.getId(), tableId);
-            if (!success) {
-                System.out.println(" Booking failed. The table may already be reserved.");
-            }
-        } catch (Exception e) {
-            System.out.println(" Error while booking table: " + e.getMessage());
-        }
-    }
-
-
-    private void handleViewMyBookings(User user) {
-        System.out.println("\n Fetching your bookings...");
-
-        List<Booking> bookings = bookingService.getBookingsByUserId(user.getId());
-        if (bookings.isEmpty()) {
-            System.out.println(" You have no bookings yet.");
+        // Получаем список доступных столиков для выбранного ресторана
+        List<Table> tables = tableService.getAvailableTables(restaurantId);
+        if (tables.isEmpty()) {
+            System.out.println("No available tables found for restaurant ID: " + restaurantId);
             return;
         }
 
-        System.out.println("\n Your Bookings:");
-        for (Booking booking : bookings) {
-            // Получаем ID ресторана по ID столика
-            int restaurantId = tableService.getRestaurantIdByTable(booking.getTableId());
+        // Отображаем столики с порядковой нумерацией
+        System.out.println("Available Tables:");
+        int index = 1;
+        for (Table table : tables) {
+            System.out.println("[" + index + "] - is available");
+            index++;
+        }
 
-            System.out.println(" Booking ID: " + booking.getId() +
-                    " | Restaurant ID: " + restaurantId +
-                    " | Table ID: " + booking.getTableId() +
-                    " | Time: " + booking.getBookingTime());
+        // Запрашиваем выбор у пользователя (порядковый номер)
+        System.out.print("Enter the number corresponding to the table you want to book: ");
+        int choice = getUserChoice();
+
+        // Проверяем корректность выбора
+        if (choice < 1 || choice > tables.size()) {
+            System.out.println("Invalid table selection.");
+            return;
+        }
+
+        // Получаем реальный ID выбранного столика
+        int actualTableId = tables.get(choice - 1).getId();
+
+        // Пытаемся создать бронирование с использованием реального ID столика
+        boolean success = bookingService.createBooking(user.getId(), actualTableId);
+        if (success) {
+            System.out.println("Table booked successfully!");
+        } else {
+            System.out.println("Booking failed. Please try again.");
         }
     }
+
+
+
+    private void handleViewMyBookings(User user) {
+        System.out.println("\nFetching your bookings...");
+        List<Booking> bookings = bookingService.getBookingsByUserId(user.getId());
+        if (bookings.isEmpty()) {
+            System.out.println("You have no bookings.");
+        } else {
+            System.out.println("\nYour Bookings:");
+            for (Booking booking : bookings) {
+                // Получаем id ресторана по tableId
+                int restaurantId = tableService.getRestaurantIdByTable(booking.getTableId());
+                // Получаем объект ресторана, чтобы вывести его название
+                Restaurant restaurant = restaurantService.getRestaurantById(restaurantId);
+                String restaurantName = (restaurant != null) ? restaurant.getName() : "Unknown";
+                System.out.println("User: " + user.getName() +
+                        " | Restaurant: " + restaurantName +
+                        " | Table ID: " + booking.getTableId() +
+                        " | Booking Time: " + booking.getBookingTime());
+            }
+        }
+    }
+
+
 
 
     private int getUserChoice() {

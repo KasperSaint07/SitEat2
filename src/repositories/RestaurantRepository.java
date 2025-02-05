@@ -15,11 +15,9 @@ public class RestaurantRepository {
     public List<Restaurant> getAllRestaurants() {
         List<Restaurant> restaurants = new ArrayList<>();
         String sql = "SELECT * FROM restaurants ORDER BY id ASC";
-        System.out.println("\nExecuting SQL Query: " + sql);
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
-                System.out.println("Loaded: " + rs.getString("name"));
                 restaurants.add(new Restaurant(
                         rs.getInt("id"),
                         rs.getString("name"),
@@ -31,6 +29,7 @@ public class RestaurantRepository {
         }
         return restaurants;
     }
+
 
 
 

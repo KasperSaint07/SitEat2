@@ -36,4 +36,10 @@ public class TableService {
         return tableRepository.getRestaurantIdByTable(tableId);
     }
 
+    public List<Table> getTablesByRestaurant(int restaurantId) {
+        return tableRepository.getTablesByRestaurant(restaurantId);
+    }
+
+
 }
+
