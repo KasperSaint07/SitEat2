@@ -112,7 +112,8 @@ public class AdminMenuManager {
             System.out.println("This table does not belong to your restaurant.");
             return;
         }
-        boolean success = tableService.reserveTable(tableId, false);
+        // Используем reserveTable для пометки столика как недоступного
+        boolean success = tableService.reserveTable(tableId);
         if (success) {
             System.out.println("Table " + tableId + " marked as unavailable.");
         } else {
@@ -128,7 +129,8 @@ public class AdminMenuManager {
             System.out.println("This table does not belong to your restaurant.");
             return;
         }
-        boolean success = tableService.releaseTable(tableId, true);
+        // Используем releaseTable для освобождения столика
+        boolean success = tableService.releaseTable(tableId);
         if (success) {
             System.out.println("Table " + tableId + " is now available.");
         } else {
