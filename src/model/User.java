@@ -1,11 +1,22 @@
 package model;
+
+import lombok.Getter;
+import lombok.Setter;
+
 //User in system
+@Getter
 public class User {
+    // Getters and Setters
     private int id;           // ID пользователя
+    @Setter
     private String login;     // Логин пользователя
+    @Setter
     private String password;  // Пароль пользователя
+    @Setter
     private String name;      // Имя пользователя
+    @Setter
     private String surname;   // Фамилия пользователя
+    @Setter
     private boolean gender;   // Пол (true - мужской, false - женский)
 
     public User(int id, String login, String password, String name, String surname, boolean gender) {
@@ -19,50 +30,5 @@ public class User {
 
     public User(int id, String login, String password) {
         this(id, login, password, "", "", true);
-    }
-
-    // Getters and Setters
-    public int getId() {
-        return id;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
-
-    public void setSurname(String surname) {
-        this.surname = surname;
-    }
-
-    public boolean isGender() {
-        return gender;
-    }
-
-    public void setGender(boolean gender) {
-        this.gender = gender;
     }
 }
