@@ -1,5 +1,9 @@
 package model;
+
+import lombok.Getter;
+
 //Restaurant info
+@Getter
 public class Restaurant {
     private int id; // ID ресторана
     private String name; // Название ресторана
@@ -11,15 +15,4 @@ public class Restaurant {
         this.location = location;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getLocation() {
-        return location;
-    }
 }
