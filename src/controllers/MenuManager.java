@@ -1,34 +1,37 @@
 package controllers;
+
 import model.Restaurant;
 import model.*;
 import service.*;
 
 import java.util.List;
 import java.util.Scanner;
+
 public class MenuManager {
     private AuthService authService;
     private BookingService bookingService;
     private RestaurantService restaurantService;
     private TableService tableService;
     private UserService userService;
-    private Scanner scanner=new Scanner(System.in);
+    private Scanner scanner = new Scanner(System.in);
+
     public MenuManager(AuthService authService, BookingService bookingService, RestaurantService restaurantService, TableService tableService, UserService userService) {
-        this.authService=authService;
-        this.bookingService=bookingService;
-        this.restaurantService=restaurantService;
-        this.tableService=tableService;
-        this.userService=userService;
+        this.authService = authService;
+        this.bookingService = bookingService;
+        this.restaurantService = restaurantService;
+        this.tableService = tableService;
+        this.userService = userService;
     }
+
+    // Оставляем существующий start() метод, если он нужен для отдельного цикла (но теперь мы вызываем отдельные методы)
     public void start() {
         while (true) {
             System.out.println("1. Register");
             System.out.println("2. Login");
             System.out.println("3. Exit");
             System.out.print("Enter your choice: ");
-
             int choice = scanner.nextInt();
             scanner.nextLine();
-
             switch (choice) {
                 case 1:
                     handleRegistration();
@@ -45,6 +48,7 @@ public class MenuManager {
         }
     }
 
+    // Скрытые (private) методы, которые уже реализованы:
     private void handleRegistration() {
         System.out.println("Enter login: ");
         String login = scanner.nextLine();
@@ -54,9 +58,9 @@ public class MenuManager {
         String name = scanner.nextLine();
         System.out.println("Enter your surname: ");
         String surname = scanner.nextLine();
-        System.out.println("Enter your gender(true for male, false for female): ");
-        boolean gender =  Boolean.parseBoolean(scanner.nextLine());
-        scanner.nextLine();
+        System.out.println("Enter your gender (true for male, false for female): ");
+        boolean gender = Boolean.parseBoolean(scanner.nextLine());
+        // Избыточный scanner.nextLine() можно убрать, если не требуется
         boolean registered = userService.registerUser(login, password, name, surname, gender);
         if (registered) {
             System.out.println("Registration successful!");
@@ -64,22 +68,42 @@ public class MenuManager {
             System.out.println("Registration failed.");
         }
     }
+
     private void handleLogin() {
         System.out.println("Enter login: ");
         String login = scanner.nextLine();
         System.out.println("Enter password: ");
         String password = scanner.nextLine();
-        User user= authService.loginAsUser(login, password);
+        User user = authService.loginAsUser(login, password);
         if (user != null) {
             System.out.println("Login successful! Welcome, " + user.getName());
             showUserMenu(user);
-        }
-        else {
+        } else {
             System.out.println("Login failed. Please check your credentials.!");
         }
-
     }
-    private void showUserMenu(User user) {
+
+    // Новый публичный метод для регистрации пользователя
+    public void registerUser() {
+        handleRegistration();
+    }
+
+    // Новый публичный метод для входа пользователя (возвращает объект User)
+    public User loginUser() {
+        System.out.println("Enter login: ");
+        String login = scanner.nextLine();
+        System.out.println("Enter password: ");
+        String password = scanner.nextLine();
+        User user = authService.loginAsUser(login, password);
+        if (user != null) {
+            System.out.println("Login successful! Welcome, " + user.getName());
+        } else {
+            System.out.println("Login failed. Please check your credentials.");
+        }
+        return user;
+    }
+
+    public void showUserMenu(User user) {
         boolean loggedIn = true;
         while (loggedIn) {
             System.out.println("\nChoose an option:");
@@ -89,8 +113,7 @@ public class MenuManager {
             System.out.println("4. View My Bookings");
             System.out.println("5. Logout");
             System.out.print("Your choice: ");
-            int userChoice = getUserChoice(); // Используем уже существующий метод для ввода числа
-
+            int userChoice = getUserChoice();
             switch (userChoice) {
                 case 1:
                     handleViewRestaurants();
@@ -126,9 +149,6 @@ public class MenuManager {
         }
     }
 
-
-
-
     private void handleViewAvailableTables() {
         System.out.print("\nEnter restaurant ID to view available tables: ");
         int restaurantId = getUserChoice();
@@ -139,50 +159,33 @@ public class MenuManager {
             System.out.println("Available Tables:");
             int index = 1;
             for (Table table : tables) {
-                // Выводим порядковый номер, а не table.getId()
                 System.out.println("[" + index + "] - is available");
                 index++;
             }
         }
     }
 
-
-
-
-
     private void handleBookTable(User user) {
         System.out.print("\nEnter restaurant ID for booking: ");
         int restaurantId = getUserChoice();
-
-        // Получаем список доступных столиков для выбранного ресторана
         List<Table> tables = tableService.getAvailableTables(restaurantId);
         if (tables.isEmpty()) {
             System.out.println("No available tables found for restaurant ID: " + restaurantId);
             return;
         }
-
-        // Отображаем столики с порядковой нумерацией
         System.out.println("Available Tables:");
         int index = 1;
         for (Table table : tables) {
             System.out.println("[" + index + "] - is available");
             index++;
         }
-
-        // Запрашиваем выбор у пользователя (порядковый номер)
         System.out.print("Enter the number corresponding to the table you want to book: ");
         int choice = getUserChoice();
-
-        // Проверяем корректность выбора
         if (choice < 1 || choice > tables.size()) {
             System.out.println("Invalid table selection.");
             return;
         }
-
-        // Получаем реальный ID выбранного столика
         int actualTableId = tables.get(choice - 1).getId();
-
-        // Пытаемся создать бронирование с использованием реального ID столика
         boolean success = bookingService.createBooking(user.getId(), actualTableId);
         if (success) {
             System.out.println("Table booked successfully!");
@@ -190,8 +193,6 @@ public class MenuManager {
             System.out.println("Booking failed. Please try again.");
         }
     }
-
-
 
     private void handleViewMyBookings(User user) {
         System.out.println("\nFetching your bookings...");
@@ -201,9 +202,7 @@ public class MenuManager {
         } else {
             System.out.println("\nYour Bookings:");
             for (Booking booking : bookings) {
-                // Получаем id ресторана по tableId
                 int restaurantId = tableService.getRestaurantIdByTable(booking.getTableId());
-                // Получаем объект ресторана, чтобы вывести его название
                 Restaurant restaurant = restaurantService.getRestaurantById(restaurantId);
                 String restaurantName = (restaurant != null) ? restaurant.getName() : "Unknown";
                 System.out.println("User: " + user.getName() +
@@ -214,18 +213,13 @@ public class MenuManager {
         }
     }
 
-
-
-
     private int getUserChoice() {
         while (true) {
             try {
-                int choice = Integer.parseInt(scanner.nextLine().trim());
-                return choice;
+                return Integer.parseInt(scanner.nextLine().trim());
             } catch (NumberFormatException e) {
-                System.out.println("Invalid input! Please enter a number.");
+                System.out.print("Invalid input! Please enter a number: ");
             }
         }
     }
 }
-
