@@ -1,8 +1,15 @@
 package model;
 
+import lombok.Getter;
+import lombok.Setter;
+
 //Table info
 public class Table {
+    @Setter
+    @Getter
     private int id;              // ID столика
+    @Setter
+    @Getter
     private int restaurantId;    // ID ресторана, к которому относится столик
     private boolean isAvailable; // Доступность столика
 
@@ -10,23 +17,6 @@ public class Table {
         this.id = id;
         this.restaurantId = restaurantId;
         this.isAvailable = isAvailable;
-    }
-
-    // Getters and Setters
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getRestaurantId() {
-        return restaurantId;
-    }
-
-    public void setRestaurantId(int restaurantId) {
-        this.restaurantId = restaurantId;
     }
 
     public boolean isAvailable() {
