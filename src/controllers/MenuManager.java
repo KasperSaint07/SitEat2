@@ -4,6 +4,7 @@ import model.Restaurant;
 import model.*;
 import service.*;
 
+import java.sql.SQLOutput;
 import java.util.List;
 import java.util.Scanner;
 
@@ -23,90 +24,119 @@ public class MenuManager {
         this.userService = userService;
     }
 
-    // Оставляем существующий start() метод, если он нужен для отдельного цикла (но теперь мы вызываем отдельные методы)
-    public void start() {
-        while (true) {
-            System.out.println("1. Register");
-            System.out.println("2. Login");
-            System.out.println("3. Exit");
-            System.out.print("Enter your choice: ");
-            int choice = scanner.nextInt();
-            scanner.nextLine();
-            switch (choice) {
-                case 1:
-                    handleRegistration();
-                    break;
-                case 2:
-                    handleLogin();
-                    break;
-                case 3:
-                    System.out.println("Thank you for using Sit&Eat. Goodbye!");
-                    return;
-                default:
-                    System.out.println("Invalid choice. Please try again.");
-            }
-        }
-    }
-
-    // Скрытые (private) методы, которые уже реализованы:
-    private void handleRegistration() {
-        System.out.println("Enter login: ");
-        String login = scanner.nextLine();
-        System.out.println("Enter password: ");
-        String password = scanner.nextLine();
-        System.out.println("Enter your name: ");
-        String name = scanner.nextLine();
-        System.out.println("Enter your surname: ");
-        String surname = scanner.nextLine();
-        System.out.println("Enter your gender (true for male, false for female): ");
-        boolean gender = Boolean.parseBoolean(scanner.nextLine());
-        // Избыточный scanner.nextLine() можно убрать, если не требуется
-        boolean registered = userService.registerUser(login, password, name, surname, gender);
-        if (registered) {
-            System.out.println("Registration successful!");
-        } else {
-            System.out.println("Registration failed.");
-        }
-    }
-
-    private void handleLogin() {
-        System.out.println("Enter login: ");
-        String login = scanner.nextLine();
-        System.out.println("Enter password: ");
-        String password = scanner.nextLine();
-        User user = authService.loginAsUser(login, password);
-        if (user != null) {
-            System.out.println("Login successful! Welcome, " + user.getName());
-            showUserMenu(user);
-        } else {
-            System.out.println("Login failed. Please check your credentials.!");
-        }
-    }
-
     // Новый публичный метод для регистрации пользователя
     public void registerUser() {
         handleRegistration();
     }
 
+    // Скрытые (private) методы, которые уже реализованы:
+    private void handleRegistration() {
+        String login, password, name, surname;
+        boolean gender;
+        while (true) {
+            System.out.println("===Registration Menu===");
+            System.out.print("Enter login: ");
+            login = scanner.nextLine().trim();
+            if (login.isEmpty()) {
+                System.out.println("Login cannot be empty. Please try again.");
+                continue;
+            }
+            if (userService.isLoginTaken(login)) {  // Проверяем, существует ли логин
+                System.out.println("This login is already taken. Please choose another.");
+                continue;
+            }
+            System.out.print("Enter password: ");
+            password = scanner.nextLine().trim();
+            if (password.isEmpty()) {
+                System.out.println("Password cannot be empty. Please try again.");
+                continue;
+            }
+            System.out.print("Enter your name: ");
+            name = scanner.nextLine().trim();
+            if (name.isEmpty()) {
+                System.out.println("Name cannot be empty. Please try again.");
+                continue;
+            }
+            System.out.print("Enter your surname: ");
+            surname = scanner.nextLine().trim();
+            if (surname.isEmpty()) {
+                System.out.println("Surname cannot be empty. Please try again.");
+                continue;
+            }
+            System.out.print("Enter your gender (true for male, false for female): ");
+            String genderInput = scanner.nextLine().trim();
+            if (!genderInput.equalsIgnoreCase("true") && !genderInput.equalsIgnoreCase("false")) {
+                System.out.println("Invalid gender input. Please enter 'true' or 'false'.");
+                continue;
+            }
+            gender = Boolean.parseBoolean(genderInput);
+
+            boolean registered = userService.registerUser(login, password, name, surname, gender);
+            if (registered) {
+                System.out.println("Registration successful!");
+                break;
+            } else {
+                System.out.println("Registration failed. Try again.");
+            }
+        }
+    }
+
     // Новый публичный метод для входа пользователя (возвращает объект User)
     public User loginUser() {
-        System.out.println("Enter login: ");
-        String login = scanner.nextLine();
-        System.out.println("Enter password: ");
-        String password = scanner.nextLine();
-        User user = authService.loginAsUser(login, password);
-        if (user != null) {
-            System.out.println("Login successful! Welcome, " + user.getName());
-        } else {
-            System.out.println("Login failed. Please check your credentials.");
+        while (true) {
+            System.out.println("\n===Login Menu===");
+            System.out.print("Enter login: ");
+            String login = scanner.nextLine().trim();
+            if (login.isEmpty()) {
+                System.out.println("Login cannot be empty. Please try again.");
+                continue;
+            }
+            System.out.print("Enter password: ");
+            String password = scanner.nextLine().trim();
+            if (password.isEmpty()) {
+                System.out.println("Password cannot be empty. Please try again.");
+                continue;
+            }
+            User user = authService.loginAsUser(login, password);
+            if (user != null) {
+                System.out.println("Login successful! Welcome, " + user.getName());
+            } else {
+                System.out.println("Login failed. Please check your credentials.");
+            }
+            return user;
         }
-        return user;
+    }
+
+    public Admin loginAdmin() {
+        while (true) {
+            System.out.println("\n===Login Admin Menu===");
+            System.out.print("Enter admin username: ");
+            String adminUsername = scanner.nextLine().trim();
+            if (adminUsername.isEmpty()) {
+                System.out.println("Login cannot be empty. Please try again.");
+                continue;
+            }
+            System.out.print("Enter admin password: ");
+            String adminPassword = scanner.nextLine().trim();
+            if (adminPassword.isEmpty()) {
+                System.out.println("Password cannot be empty. Please try again.");
+                continue;
+            }
+            Admin admin = authService.loginAsAdmin(adminUsername, adminPassword);
+            if (admin != null) {
+                System.out.println("Login successful! Welcome, admin " + admin.getUsername());
+            } else {
+                System.out.println("Invalid admin credentials.");
+            }
+            return admin;
+        }
     }
 
     public void showUserMenu(User user) {
         boolean loggedIn = true;
         while (loggedIn) {
-            System.out.println("\nChoose an option:");
+            System.out.println("\n---User Menu---");
+            System.out.println("Choose an option:");
             System.out.println("1. View Restaurants");
             System.out.println("2. View Available Tables");
             System.out.println("3. Book a Table");
