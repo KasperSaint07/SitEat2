@@ -2,12 +2,14 @@ package repositories.interfaces;
 
 import model.User;
 import java.util.List;
+import java.util.Optional;
 
 public interface IUserRepository {
-    boolean createUser(User user); // Create a new user in the database.
-    User getUserById(int id); // Retrieve a user by their ID.
-    List<User> getAllUsers(); // Retrieve all users from the database.
-    boolean updateUser(User user); // Update the details of an existing user.
-    boolean deleteUser(int id); // Delete a user by their ID.
-    User authenticate(String login, String password); // Authenticate a user by their login and password.
+    boolean createUser(User user); // Создать нового пользователя
+    User getUserById(int id); // Получить пользователя по ID
+    List<User> getAllUsers(); // Получить всех пользователей
+    boolean updateUser(User user); // Обновить данные пользователя
+    boolean deleteUser(int id); // Удалить пользователя по ID
+    User authenticate(String login, String password); // Аутентификация пользователя
+    Optional<User> findByLogin(String login); // Поиск пользователя по логину (StackOverFlow посмотрите скину)
 }

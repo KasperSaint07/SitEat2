@@ -19,6 +19,6 @@ public class AuthService {
     }
 
     public User loginAsUser(String username, String password) {
-        return userRepository.getUserByCredentials(username, password);
+        return userRepository.authenticate(username, password);
     }
 }

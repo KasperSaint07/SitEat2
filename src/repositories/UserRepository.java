@@ -1,19 +1,21 @@
 package repositories;
 
 import model.User;
+import repositories.interfaces.IUserRepository;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class UserRepository {
+public class UserRepository implements IUserRepository {
     private final Connection connection;
 
     public UserRepository(Connection connection) {
         this.connection = connection;
     }
 
-    public boolean addUser(User user) {
+    @Override
+    public boolean createUser(User user) {
         String sql = "INSERT INTO users (login, password, name, surname, gender) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, user.getLogin());
@@ -28,6 +30,7 @@ public class UserRepository {
         }
     }
 
+    @Override
     public User getUserById(int id) {
         String sql = "SELECT * FROM users WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -49,29 +52,7 @@ public class UserRepository {
         return null;
     }
 
-    public Optional<User> findByLogin(String login) {
-        String sql = "SELECT * FROM users WHERE login = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, login);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                User user = new User(
-                        rs.getInt("id"),
-                        rs.getString("login"),
-                        rs.getString("password"),
-                        rs.getString("name"),
-                        rs.getString("surname"),
-                        rs.getBoolean("gender")
-                );
-                return Optional.of(user);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return Optional.empty();
-    }
-
+    @Override
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
         String sql = "SELECT * FROM users";
@@ -93,8 +74,37 @@ public class UserRepository {
         return users;
     }
 
-    // Новый метод: поиск пользователя по учетным данным
-    public User getUserByCredentials(String login, String password) {
+    @Override
+    public boolean updateUser(User user) {
+        String sql = "UPDATE users SET login = ?, password = ?, name = ?, surname = ?, gender = ? WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, user.getLogin());
+            stmt.setString(2, user.getPassword());
+            stmt.setString(3, user.getName());
+            stmt.setString(4, user.getSurname());
+            stmt.setBoolean(5, user.isGender());
+            stmt.setInt(6, user.getId());
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean deleteUser(int id) {
+        String sql = "DELETE FROM users WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
+    public User authenticate(String login, String password) {
         String sql = "SELECT * FROM users WHERE login = ? AND password = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, login);
@@ -114,5 +124,28 @@ public class UserRepository {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public Optional<User> findByLogin(String login) {
+        String sql = "SELECT * FROM users WHERE login = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, login);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                User user = new User(
+                        rs.getInt("id"),
+                        rs.getString("login"),
+                        rs.getString("password"),
+                        rs.getString("name"),
+                        rs.getString("surname"),
+                        rs.getBoolean("gender")
+                );
+                return Optional.of(user);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return Optional.empty();
     }
 }
