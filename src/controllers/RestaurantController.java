@@ -18,7 +18,7 @@ public class RestaurantController {
         System.out.println("Available Restaurants:");
         List<Restaurant> restaurants = restaurantService.getAllRestaurants();
         for (Restaurant restaurant : restaurants) {
-            System.out.println("ID: " + restaurant.getId() + ", Name: " + restaurant.getName() + ", Location: " + restaurant.getLocation());
+            System.out.println("ID: " + restaurant.getId() + ", Name: " + restaurant.getName() + ", Location: " + restaurant.getLocation() + " (" + restaurant.getCategory() + ")");;
         }
     }
 
