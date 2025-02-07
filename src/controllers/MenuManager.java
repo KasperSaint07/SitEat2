@@ -83,40 +83,60 @@ public class MenuManager {
 
     // Новый публичный метод для входа пользователя (возвращает объект User)
     public User loginUser() {
-        System.out.println("===Login Menu===");
-        System.out.print("Enter login: ");
-        String login = scanner.nextLine();
-        System.out.print("Enter password: ");
-        String password = scanner.nextLine();
-        User user = authService.loginAsUser(login, password);
-        if (user != null) {
-            System.out.println("Login successful! Welcome, " + user.getName());
-        } else {
-            System.out.println("Login failed. Please check your credentials.");
+        while (true) {
+            System.out.println("\n===Login Menu===");
+            System.out.print("Enter login: ");
+            String login = scanner.nextLine().trim();
+            if (login.isEmpty()) {
+                System.out.println("Login cannot be empty. Please try again.");
+                continue;
+            }
+            System.out.print("Enter password: ");
+            String password = scanner.nextLine().trim();
+            if (password.isEmpty()) {
+                System.out.println("Password cannot be empty. Please try again.");
+                continue;
+            }
+            User user = authService.loginAsUser(login, password);
+            if (user != null) {
+                System.out.println("Login successful! Welcome, " + user.getName());
+            } else {
+                System.out.println("Login failed. Please check your credentials.");
+            }
+            return user;
         }
-        return user;
     }
 
-    public Admin loginAdmin(){
-        System.out.println("===Login Admin Menu===");
-        System.out.print("Enter admin username: ");
-        String adminUsername = scanner.nextLine();
-        System.out.print("Enter admin password: ");
-        String adminPassword = scanner.nextLine();
-        Admin admin = authService.loginAsAdmin(adminUsername, adminPassword);
-        if (admin != null) {
-            System.out.println("Login successful! Welcome, admin " + admin.getUsername());
-        } else {
-            System.out.println("Invalid admin credentials.");
+    public Admin loginAdmin() {
+        while (true) {
+            System.out.println("\n===Login Admin Menu===");
+            System.out.print("Enter admin username: ");
+            String adminUsername = scanner.nextLine().trim();
+            if (adminUsername.isEmpty()) {
+                System.out.println("Login cannot be empty. Please try again.");
+                continue;
+            }
+            System.out.print("Enter admin password: ");
+            String adminPassword = scanner.nextLine().trim();
+            if (adminPassword.isEmpty()) {
+                System.out.println("Password cannot be empty. Please try again.");
+                continue;
+            }
+            Admin admin = authService.loginAsAdmin(adminUsername, adminPassword);
+            if (admin != null) {
+                System.out.println("Login successful! Welcome, admin " + admin.getUsername());
+            } else {
+                System.out.println("Invalid admin credentials.");
+            }
+            return admin;
         }
-        return admin;
     }
 
     public void showUserMenu(User user) {
         boolean loggedIn = true;
         while (loggedIn) {
-            System.out.println("---User Menu---");
-            System.out.println("\nChoose an option:");
+            System.out.println("\n---User Menu---");
+            System.out.println("Choose an option:");
             System.out.println("1. View Restaurants");
             System.out.println("2. View Available Tables");
             System.out.println("3. Book a Table");
