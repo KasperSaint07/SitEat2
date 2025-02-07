@@ -21,7 +21,8 @@ public class RestaurantRepository {
                 restaurants.add(new Restaurant(
                         rs.getInt("id"),
                         rs.getString("name"),
-                        rs.getString("location")
+                        rs.getString("location"),
+                        rs.getString("category")
                 ));
             }
         } catch (SQLException e) {
@@ -63,7 +64,7 @@ public class RestaurantRepository {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return new Restaurant(rs.getInt("id"), rs.getString("name"), rs.getString("location"));
+                return new Restaurant(rs.getInt("id"), rs.getString("name"), rs.getString("location"), rs.getString("category"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
