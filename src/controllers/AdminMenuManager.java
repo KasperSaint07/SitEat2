@@ -19,6 +19,7 @@ public class AdminMenuManager {
     private final RestaurantService restaurantService;
     private final UserService userService;
     private final Scanner scanner = new Scanner(System.in);
+    private AdminController adminController;
 
     public AdminMenuManager(Admin admin, BookingService bookingService, TableService tableService,
                             RestaurantService restaurantService, UserService userService) {
@@ -27,6 +28,7 @@ public class AdminMenuManager {
         this.tableService = tableService;
         this.restaurantService = restaurantService;
         this.userService = userService;
+        this.adminController = new AdminController(bookingService);
     }
 
     public void start() {
@@ -48,7 +50,7 @@ public class AdminMenuManager {
                     viewTables();
                     break;
                 case 2:
-                    viewBookings();
+                    adminController.viewBookingsForRestaurant(admin.getRestaurantId());
                     break;
                 case 3:
                     markTableUnavailable();
@@ -81,25 +83,6 @@ public class AdminMenuManager {
             for (Table table : tables) {
                 String status = table.isAvailable() ? "available" : "unavailable";
                 System.out.println("Table ID: " + table.getId() + " - " + status);
-            }
-        }
-    }
-
-    private void viewBookings() {
-        System.out.println("\nBookings for your restaurant:");
-        List<Booking> bookings = bookingService.getBookingsByRestaurant(admin.getRestaurantId());
-        if (bookings.isEmpty()) {
-            System.out.println("No bookings found.");
-        } else {
-            int count = 1;
-            for (Booking booking : bookings) {
-                User user = userService.getUserById(booking.getUserId());
-                String userInfo = (user != null) ? user.getName() + " " + user.getSurname() : "Unknown";
-                System.out.println(count + ". Booking ID: " + booking.getId()
-                        + " | Table ID: " + booking.getTableId()
-                        + " | Time: " + booking.getBookingTime()
-                        + " | Booked by: " + userInfo);
-                count++;
             }
         }
     }

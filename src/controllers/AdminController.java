@@ -13,11 +13,18 @@ public class AdminController {
     }
 
     public void viewBookingsForRestaurant(int restaurantId) {
-        System.out.println("Bookings for Restaurant ID: " + restaurantId);
-        bookingService.getBookingsByRestaurant(restaurantId).forEach(booking ->
+        System.out.println("\nBookings for Restaurant ID: " + restaurantId);
+        var bookings = bookingService.getBookingsByRestaurant(restaurantId);
+
+        if (bookings.isEmpty()) {
+            System.out.println("No bookings found for this restaurant.");
+            return;
+        }
+
+        bookings.forEach(booking ->
                 System.out.println("Booking ID: " + booking.getId() +
-                        ", Table ID: " + booking.getTableId() +
-                        ", Time: " + booking.getBookingTime())
+                        " | Table ID: " + booking.getTableId() +
+                        " | Time: " + booking.getBookingTime())
         );
     }
 }

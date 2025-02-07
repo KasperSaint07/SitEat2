@@ -12,10 +12,21 @@ public class TableController {
         this.tableService = tableService;
     }
 
-    public void viewAvailableTables(int restaurantId) {
+    public void viewAvailableTables() {
+        System.out.print("\nEnter restaurant ID to view available tables: ");
+        int restaurantId = getUserChoice();
         System.out.println("Available tables:");
         tableService.getAvailableTables(restaurantId).forEach(table ->
                 System.out.println("Table ID: " + table.getId())
         );
+    }
+    private int getUserChoice() {
+        while (true) {
+            try {
+                return Integer.parseInt(scanner.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.out.print("Invalid input! Please enter a number: ");
+            }
+        }
     }
 }
