@@ -21,8 +21,9 @@ public class Application {
         // Отключает все логи java.util.logging
         LogManager.getLogManager().reset();
         // Инициализация подключения к базе данных
-        PostgresDB db = new PostgresDB();
+        PostgresDB db = PostgresDB.getInstance();
         Connection connection = db.getConnection();
+
 
         // Инициализация репозиториев
         AdminRepository adminRepository = new AdminRepository(connection);
