@@ -28,7 +28,7 @@ public class AdminMenuManager {
         this.tableService = tableService;
         this.restaurantService = restaurantService;
         this.userService = userService;
-        this.adminController = new AdminController(bookingService);
+        this.adminController = new AdminController(bookingService, tableService);
     }
 
     public void start() {
@@ -47,22 +47,22 @@ public class AdminMenuManager {
 
             switch (choice) {
                 case 1:
-                    viewTables();
+                    adminController.viewTables(admin.getRestaurantId());
                     break;
                 case 2:
                     adminController.viewBookingsForRestaurant(admin.getRestaurantId());
                     break;
                 case 3:
-                    markTableUnavailable();
+                    adminController.markTableUnavailable(admin.getRestaurantId());
                     break;
                 case 4:
-                    releaseTable();
+                    adminController.releaseTable(admin.getRestaurantId());
                     break;
                 case 5:
-                    addTable();
+                    adminController.addTable(admin.getRestaurantId());
                     break;
                 case 6:
-                    removeTable();
+                    adminController.removeTable(admin.getRestaurantId());
                     break;
                 case 7:
                     loggedIn = false;
@@ -71,79 +71,6 @@ public class AdminMenuManager {
                 default:
                     System.out.println("Invalid option. Try again.");
             }
-        }
-    }
-
-    private void viewTables() {
-        System.out.println("\nTables for your restaurant:");
-        List<Table> tables = tableService.getTablesByRestaurant(admin.getRestaurantId());
-        if (tables.isEmpty()) {
-            System.out.println("No tables found.");
-        } else {
-            for (Table table : tables) {
-                String status = table.isAvailable() ? "available" : "unavailable";
-                System.out.println("Table ID: " + table.getId() + " - " + status);
-            }
-        }
-    }
-
-    private void markTableUnavailable() {
-        System.out.print("\nEnter Table ID to mark as unavailable: ");
-        int tableId = getUserChoice();
-        int restaurantId = tableService.getRestaurantIdByTable(tableId);
-        if (restaurantId != admin.getRestaurantId()) {
-            System.out.println("This table does not belong to your restaurant.");
-            return;
-        }
-        // Используем reserveTable для пометки столика как недоступного
-        boolean success = tableService.reserveTable(tableId);
-        if (success) {
-            System.out.println("Table " + tableId + " marked as unavailable.");
-        } else {
-            System.out.println("Failed to update table availability. Please check the ID.");
-        }
-    }
-
-    private void releaseTable() {
-        System.out.print("\nEnter Table ID to release (mark as available): ");
-        int tableId = getUserChoice();
-        int restaurantId = tableService.getRestaurantIdByTable(tableId);
-        if (restaurantId != admin.getRestaurantId()) {
-            System.out.println("This table does not belong to your restaurant.");
-            return;
-        }
-        // Используем releaseTable для освобождения столика
-        boolean success = tableService.releaseTable(tableId);
-        if (success) {
-            System.out.println("Table " + tableId + " is now available.");
-        } else {
-            System.out.println("Failed to update table availability. Please check the ID.");
-        }
-    }
-
-    private void addTable() {
-        // Добавление столика в ресторан администратора.
-        boolean success = tableService.addTable(admin.getRestaurantId());
-        if (success) {
-            System.out.println("New table added successfully to your restaurant.");
-        } else {
-            System.out.println("Failed to add new table. Please try again.");
-        }
-    }
-
-    private void removeTable() {
-        System.out.print("\nEnter Table ID to remove from your restaurant: ");
-        int tableId = getUserChoice();
-        int restaurantId = tableService.getRestaurantIdByTable(tableId);
-        if (restaurantId != admin.getRestaurantId()) {
-            System.out.println("This table does not belong to your restaurant.");
-            return;
-        }
-        boolean success = tableService.removeTable(tableId);
-        if (success) {
-            System.out.println("Table " + tableId + " removed successfully from your restaurant.");
-        } else {
-            System.out.println("Failed to remove table. Please check the Table ID and try again.");
         }
     }
 
