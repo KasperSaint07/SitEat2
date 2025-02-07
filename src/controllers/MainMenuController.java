@@ -19,9 +19,7 @@ public class MainMenuController {
     private final MenuManager menuManager;  // для регистрации и пользовательского входа
     private final Scanner scanner = new Scanner(System.in);
 
-    public MainMenuController(AuthService authService, BookingService bookingService,
-                              RestaurantService restaurantService, TableService tableService,
-                              UserService userService, MenuManager menuManager) {
+    public MainMenuController(AuthService authService, BookingService bookingService, RestaurantService restaurantService, TableService tableService, UserService userService, MenuManager menuManager) {
         this.authService = authService;
         this.bookingService = bookingService;
         this.restaurantService = restaurantService;
@@ -33,7 +31,7 @@ public class MainMenuController {
     public void start() {
         boolean exit = false;
         while (!exit) {
-            System.out.println("\nMain Menu:");
+            System.out.println("\n---Main Menu---");
             System.out.println("1. Register User");
             System.out.println("2. User Login");
             System.out.println("3. Admin Login");
@@ -51,16 +49,9 @@ public class MainMenuController {
                     }
                     break;
                 case 3:
-                    System.out.print("Enter admin username: ");
-                    String adminUsername = scanner.nextLine();
-                    System.out.print("Enter admin password: ");
-                    String adminPassword = scanner.nextLine();
-                    Admin admin = authService.loginAsAdmin(adminUsername, adminPassword);
+                    Admin admin = menuManager.loginAdmin();
                     if (admin != null) {
-                        System.out.println("Login successful! Welcome, admin " + admin.getUsername());
                         new AdminMenuManager(admin, bookingService, tableService, restaurantService, userService).start();
-                    } else {
-                        System.out.println("Invalid admin credentials.");
                     }
                     break;
                 case 4:

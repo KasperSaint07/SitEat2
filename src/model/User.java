@@ -1,34 +1,34 @@
 package model;
 
+import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
-//User in system
 @Getter
+@Setter
+@AllArgsConstructor
+@ToString
 public class User {
-    // Getters and Setters
-    private int id;           // ID пользователя
-    @Setter
-    private String login;     // Логин пользователя
-    @Setter
-    private String password;  // Пароль пользователя
-    @Setter
-    private String name;      // Имя пользователя
-    @Setter
-    private String surname;   // Фамилия пользователя
-    @Setter
-    private boolean gender;   // Пол (true - мужской, false - женский)
+    private int id;
 
-    public User(int id, String login, String password, String name, String surname, boolean gender) {
-        this.id = id;
-        this.login = login;
-        this.password = password;
-        this.name = name;
-        this.surname = surname;
-        this.gender = gender;
-    }
+    @NotNull(message = "Login cannot be empty")
+    @Size(min = 3, max = 20, message = "Login must contain from 3 to 20 characters")
+    private String login;
 
-    public User(int id, String login, String password) {
-        this(id, login, password, "", "", true);
-    }
+    @NotNull(message = "Password cannot be empty")
+    @Size(min = 3, message = "Password must contain from 3 to 20 characters")
+    private String password;
+
+    @NotNull(message = "Name cannot be empty")
+    @Size(min = 3, max = 30, message = "Name must contain from 3 to 30 characters")
+    private String name;
+
+    @NotNull(message = "Surname cannot be empty")
+    @Size(min = 3, max = 30, message = "Surname must contain from 3 to 30 characters")
+    private String surname;
+
+    @NotNull(message = "Gender cannot be empty")
+    private boolean gender;
 }

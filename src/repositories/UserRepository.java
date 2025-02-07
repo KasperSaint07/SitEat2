@@ -4,6 +4,12 @@ import model.User;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import org.hibernate.Session;
+import org.hibernate.SessionBuilder;
+import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
 public class UserRepository {
     private final Connection connection;
@@ -20,11 +26,12 @@ public class UserRepository {
             stmt.setString(3, user.getName());
             stmt.setString(4, user.getSurname());
             stmt.setBoolean(5, user.isGender());
-            return stmt.executeUpdate() > 0;    }
-        catch (SQLException e) {
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
             e.printStackTrace();
             return false;
-        }}
+        }
+    }
 
     public User getUserById(int id) {
         String sql = "SELECT * FROM users WHERE id = ?";
@@ -45,6 +52,29 @@ public class UserRepository {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public Optional<User> findByLogin(String login) {
+        String sql = "SELECT * FROM users WHERE login = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, login);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                User user = new User(
+                        rs.getInt("id"),
+                        rs.getString("login"),
+                        rs.getString("password"),
+                        rs.getString("name"),
+                        rs.getString("surname"),
+                        rs.getBoolean("gender")
+                );
+                return Optional.of(user);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return Optional.empty();
     }
 
     public List<User> getAllUsers() {

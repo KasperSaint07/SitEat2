@@ -11,13 +11,15 @@ import service.RestaurantService;
 import service.TableService;
 import service.UserService;
 import service.PostgresDB;
-
+import java.util.logging.LogManager;
 import java.sql.Connection;
 
 public class Application {
     private final MainMenuController mainMenuController;
 
     public Application() {
+        // Отключает все логи java.util.logging
+        LogManager.getLogManager().reset();
         // Инициализация подключения к базе данных
         PostgresDB db = new PostgresDB();
         Connection connection = db.getConnection();
