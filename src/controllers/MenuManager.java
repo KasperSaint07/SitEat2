@@ -34,7 +34,7 @@ public class MenuManager {
         String login, password, name, surname;
         boolean gender;
         while (true) {
-            System.out.println("===Registration Menu===");
+            System.out.println("\n===Registration Menu===");
             System.out.print("Enter login: ");
             login = scanner.nextLine().trim();
             if (login.isEmpty()) {
