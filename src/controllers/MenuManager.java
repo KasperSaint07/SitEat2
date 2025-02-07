@@ -15,6 +15,9 @@ public class MenuManager {
     private TableService tableService;
     private UserService userService;
     private Scanner scanner = new Scanner(System.in);
+    private TableController tableController;
+    private BookingController bookingController;
+    private RestaurantController restaurantController;
 
     public MenuManager(AuthService authService, BookingService bookingService, RestaurantService restaurantService, TableService tableService, UserService userService) {
         this.authService = authService;
@@ -22,6 +25,9 @@ public class MenuManager {
         this.restaurantService = restaurantService;
         this.tableService = tableService;
         this.userService = userService;
+        this.tableController = new TableController(tableService);
+        this.bookingController = new BookingController(bookingService, tableService, restaurantService);
+        this.restaurantController = new RestaurantController(restaurantService);
     }
 
     // Новый публичный метод для регистрации пользователя
@@ -146,16 +152,16 @@ public class MenuManager {
             int userChoice = getUserChoice();
             switch (userChoice) {
                 case 1:
-                    handleViewRestaurants();
+                    restaurantController.viewRestaurants();
                     break;
                 case 2:
-                    handleViewAvailableTables();
+                    tableController.viewAvailableTables();
                     break;
                 case 3:
-                    handleBookTable(user);
+                    bookingController.createBooking(user.getId());
                     break;
                 case 4:
-                    handleViewMyBookings(user);
+                    bookingController.viewMyBookings(user.getId());
                     break;
                 case 5:
                     loggedIn = false;
@@ -163,82 +169,6 @@ public class MenuManager {
                     break;
                 default:
                     System.out.println("Invalid option. Please try again.");
-            }
-        }
-    }
-
-    private void handleViewRestaurants() {
-        System.out.println("\nAvailable Restaurants:");
-        List<Restaurant> restaurants = restaurantService.getAllRestaurants();
-        if (restaurants.isEmpty()) {
-            System.out.println("No restaurants found.");
-        } else {
-            for (Restaurant restaurant : restaurants) {
-                System.out.println("[" + restaurant.getId() + "] - " + restaurant.getName());
-            }
-        }
-    }
-
-    private void handleViewAvailableTables() {
-        System.out.print("\nEnter restaurant ID to view available tables: ");
-        int restaurantId = getUserChoice();
-        List<Table> tables = tableService.getAvailableTables(restaurantId);
-        if (tables.isEmpty()) {
-            System.out.println("No available tables found for restaurant ID: " + restaurantId);
-        } else {
-            System.out.println("Available Tables:");
-            int index = 1;
-            for (Table table : tables) {
-                System.out.println("[" + index + "] - is available");
-                index++;
-            }
-        }
-    }
-
-    private void handleBookTable(User user) {
-        System.out.print("\nEnter restaurant ID for booking: ");
-        int restaurantId = getUserChoice();
-        List<Table> tables = tableService.getAvailableTables(restaurantId);
-        if (tables.isEmpty()) {
-            System.out.println("No available tables found for restaurant ID: " + restaurantId);
-            return;
-        }
-        System.out.println("Available Tables:");
-        int index = 1;
-        for (Table table : tables) {
-            System.out.println("[" + index + "] - is available");
-            index++;
-        }
-        System.out.print("Enter the number corresponding to the table you want to book: ");
-        int choice = getUserChoice();
-        if (choice < 1 || choice > tables.size()) {
-            System.out.println("Invalid table selection.");
-            return;
-        }
-        int actualTableId = tables.get(choice - 1).getId();
-        boolean success = bookingService.createBooking(user.getId(), actualTableId);
-        if (success) {
-            System.out.println("Table booked successfully!");
-        } else {
-            System.out.println("Booking failed. Please try again.");
-        }
-    }
-
-    private void handleViewMyBookings(User user) {
-        System.out.println("\nFetching your bookings...");
-        List<Booking> bookings = bookingService.getBookingsByUserId(user.getId());
-        if (bookings.isEmpty()) {
-            System.out.println("You have no bookings.");
-        } else {
-            System.out.println("\nYour Bookings:");
-            for (Booking booking : bookings) {
-                int restaurantId = tableService.getRestaurantIdByTable(booking.getTableId());
-                Restaurant restaurant = restaurantService.getRestaurantById(restaurantId);
-                String restaurantName = (restaurant != null) ? restaurant.getName() : "Unknown";
-                System.out.println("User: " + user.getName() +
-                        " | Restaurant: " + restaurantName +
-                        " | Table ID: " + booking.getTableId() +
-                        " | Booking Time: " + booking.getBookingTime());
             }
         }
     }
