@@ -13,11 +13,14 @@ import service.UserService;
 import service.PostgresDB;
 
 import java.sql.Connection;
+import java.util.logging.LogManager;
 
 public class Application {
     private final MainMenuController mainMenuController;
 
     public Application() {
+        // Отключает все логи java.util.logging
+        LogManager.getLogManager().reset();
         // Инициализация подключения к базе данных
         PostgresDB db = new PostgresDB();
         Connection connection = db.getConnection();
