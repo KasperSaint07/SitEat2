@@ -35,12 +35,4 @@ public class UserService {
         // Используем метод findByLogin из IUserRepository
         return userRepository.findByLogin(login).isPresent();
     }
-
-    public User getUserById(int userId) {
-        return userRepository.getUserById(userId);
-    }
-
-    public List<User> getAllUsers() {
-        return userRepository.getAllUsers();
-    }
 }

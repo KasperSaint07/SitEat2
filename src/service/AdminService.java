@@ -19,8 +19,4 @@ public class AdminService {
         this.tableRepository = tableRepository;
         this.bookingRepository = bookingRepository;
     }
-
-    public List<Table> getTablesByRestaurant(int restaurantId) {
-        return tableRepository.getTablesByRestaurant(restaurantId);
-    }
 }
