@@ -4,10 +4,12 @@ import model.Admin;
 import model.User;
 import repositories.AdminRepository;
 import repositories.UserRepository;
+import repositories.interfaces.IAdminRepository;
+import repositories.interfaces.IUserRepository;
 
 public class AuthService {
-    private final AdminRepository adminRepository;
-    private final UserRepository userRepository;
+    private final IAdminRepository adminRepository;
+    private final IUserRepository userRepository;
 
     public AuthService(AdminRepository adminRepository, UserRepository userRepository) {
         this.adminRepository = adminRepository;

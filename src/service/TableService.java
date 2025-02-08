@@ -2,13 +2,14 @@ package service;
 
 import model.Table;
 import repositories.TableRepository;
+import repositories.interfaces.ITableRepository;
 
 import java.util.List;
 
 public class TableService {
-    private final TableRepository tableRepository;
+    private final ITableRepository tableRepository;
 
-    public TableService(TableRepository tableRepository) {
+    public TableService(ITableRepository tableRepository) {
         this.tableRepository = tableRepository;
     }
 
@@ -40,4 +41,5 @@ public class TableService {
         return tableRepository.getTablesByRestaurant(restaurantId);
     }
 }
+
 

@@ -1,9 +1,11 @@
 package repositories;
 
 import model.Admin;
+import repositories.interfaces.IAdminRepository;
+
 import java.sql.*;
 
-public class AdminRepository {
+public class AdminRepository implements IAdminRepository {
     private final Connection connection;
 
     public AdminRepository(Connection connection) {

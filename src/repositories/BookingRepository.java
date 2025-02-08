@@ -1,12 +1,14 @@
 package repositories;
 
 import model.Booking;
+import repositories.interfaces.IBookingRepository;
+
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BookingRepository {
+public class BookingRepository implements IBookingRepository {
     private final Connection connection;
 
     public BookingRepository(Connection connection) {
@@ -62,3 +64,4 @@ public class BookingRepository {
     }
 
 }
+

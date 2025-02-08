@@ -3,12 +3,13 @@ package service;
 import model.Booking;
 import repositories.BookingRepository;
 import repositories.TableRepository;
+import repositories.interfaces.IBookingRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 public class BookingService {
-    private final BookingRepository bookingRepository;
+    private final IBookingRepository bookingRepository;
     private final TableRepository tableRepository;
 
     public BookingService(BookingRepository bookingRepository, TableRepository tableRepository) {
@@ -39,3 +40,4 @@ public class BookingService {
         return bookingRepository.getBookingsByRestaurantId(restaurantId);
     }
 }
+
