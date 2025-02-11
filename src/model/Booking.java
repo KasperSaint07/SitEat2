@@ -5,21 +5,21 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-//Booking system
-@Setter
 @Getter
+@Setter
 public class Booking {
-    // Getters and Setters
-    private int id;                 // ID брони
-    private int userId;             // ID пользователя
-    private int tableId;            // ID столика
-    private LocalDateTime bookingTime; // Время бронирования
+    private int id;
+    private int userId;
+    private int tableId;
+    private LocalDateTime bookingTime;   // время начала брони
+    private LocalDateTime bookingEndTime; // время окончания брони
 
-    public Booking(int id, int userId, int tableId, LocalDateTime bookingTime) {
+    // Обновлённый конструктор с временем окончания брони
+    public Booking(int id, int userId, int tableId, LocalDateTime bookingTime, LocalDateTime bookingEndTime) {
         this.id = id;
         this.userId = userId;
         this.tableId = tableId;
         this.bookingTime = bookingTime;
+        this.bookingEndTime = bookingEndTime;
     }
-
 }

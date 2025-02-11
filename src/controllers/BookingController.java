@@ -4,8 +4,8 @@ import model.Booking;
 import model.Restaurant;
 import service.BookingService;
 import service.TableService;
-import model.Table;
 import service.RestaurantService;
+import model.Table;
 import java.util.List;
 import java.util.Scanner;
 
@@ -24,6 +24,9 @@ public class BookingController {
     public void createBooking(int userId) {
         System.out.print("Enter Restaurant ID to view available tables: ");
         int restaurantId = getUserChoice();
+
+        // Освобождаем просроченные бронирования перед показом доступных столов
+        bookingService.releaseExpiredBookings();
 
         List<Table> availableTables = tableService.getAvailableTables(restaurantId);
         if (availableTables.isEmpty()) {
@@ -44,7 +47,15 @@ public class BookingController {
         }
 
         int tableId = availableTables.get(choice - 1).getId();
-        if (bookingService.createBooking(userId, tableId)) {
+
+        System.out.print("Enter booking duration in minutes (minimum 40, maximum 120): ");
+        int duration = getUserChoice();
+        if (duration < 40 || duration > 120) {
+            System.out.println("Invalid duration. Booking cancelled.");
+            return;
+        }
+
+        if (bookingService.createBooking(userId, tableId, duration)) {
             System.out.println("Table booked successfully!");
         } else {
             System.out.println("Failed to book table. It might be unavailable.");
@@ -68,10 +79,10 @@ public class BookingController {
 
             System.out.println("Restaurant: " + restaurantName +
                     " | Table ID: " + booking.getTableId() +
-                    " | Booking Time: " + booking.getBookingTime());
+                    " | Booking Start: " + booking.getBookingTime() +
+                    " | Booking End: " + booking.getBookingEndTime());
         }
     }
-
 
     private int getUserChoice() {
         while (true) {
