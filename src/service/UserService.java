@@ -6,10 +6,12 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import jakarta.validation.ConstraintViolation;
+import service.interfaces.IUserService;
+
 import java.util.List;
 import java.util.Set;
 
-public class UserService {
+public class UserService implements IUserService {
     private final IUserRepository userRepository;
     private final Validator validator;
 
@@ -18,7 +20,7 @@ public class UserService {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         this.validator = factory.getValidator();
     }
-
+    @Override
     public boolean registerUser(String login, String password, String name, String surname, boolean gender) {
         User user = new User(0, login, password, name, surname, gender);
         Set<ConstraintViolation<User>> violations = validator.validate(user);
@@ -30,7 +32,7 @@ public class UserService {
         }
         return userRepository.createUser(user);
     }
-
+    @Override
     public boolean isLoginTaken(String login) {
         // Используем метод findByLogin из IUserRepository
         return userRepository.findByLogin(login).isPresent();
